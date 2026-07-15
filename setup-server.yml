@@ -1,0 +1,42 @@
+---
+- name: Setup my Ubuntu server
+  hosts: servers
+  become: true
+
+  vars:
+    packages:
+      - htop
+      - btop
+      - curl
+      - nginx
+
+    users:
+      - username: developer
+        shell: /bin/bash
+
+      - username: tester
+        shell: /bin/zsh
+
+      - username: admin
+        shell: /bin/bash
+
+  tasks:
+    - name: Install packages
+      ansible.builtin.apt:
+        name: "{{ packages }}"
+        state: present
+        update_cache: true
+
+    - name: Create users
+      ansible.builtin.user:
+        name: "{{ item.username }}"
+        shell: "{{ item.shell }}"
+        create_home: true
+        state: present
+      loop: "{{ users }}"
+
+    - name: Start and enable nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
