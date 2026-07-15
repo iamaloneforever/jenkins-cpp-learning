@@ -18,7 +18,7 @@ pipeline {
                     mkdir -p build
 
                     g++ -std=c++20 \
-                        src/*.cpp \
+                        *.cpp \
                         -Iinclude \
                         -o build/myapp
                 '''
