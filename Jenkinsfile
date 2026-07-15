@@ -40,7 +40,7 @@ pipeline {
                 // Use the ansiblePlaybook step provided by the Ansible plugin [citation:2][citation:6]
                 ansiblePlaybook(
                     playbook: './setup-server.yml', // Path to your playbook in the repo
-                    inventory: './setup-server.yml'    // Path to your inventory file
+                    inventory: './setup-server.yml',    // Path to your inventory file
                     credentialsId: 'ansible-ssh-key'      // ID of the SSH key credential in Jenkins
                     // Add other parameters as needed, e.g., extraVars, limit, etc. [citation:2]
                 )
