@@ -2,6 +2,12 @@ pipeline {
     agent {
         label 'cpp-agent'
     }
+    
+    tools {
+        // Reference the Ansible tool configured in Global Tool Configuration
+        // Make sure you've added "Ansible" as a tool with "Install automatically" checked
+        ansible 'Ansible'
+    }
 
     stages {
         stage('Pull') {
@@ -14,9 +20,7 @@ pipeline {
             steps {
                 sh '''
                     set -e
-
                     mkdir -p build
-
                     g++ -std=c++20 \
                         *.cpp \
                         -Iinclude \
@@ -34,26 +38,28 @@ pipeline {
             }
         }
 
-        // --- New Stage: Run Ansible Playbook ---
         stage('Deploy with Ansible') {
             steps {
-                // Use the ansiblePlaybook step provided by the Ansible plugin [citation:2][citation:6]
+                // Option 1: Using the Ansible plugin's native step
                 ansiblePlaybook(
-                    playbook: './setup-server.yml', // Path to your playbook in the repo
-                    inventory: './setup-server.yml',    // Path to your inventory file
-                    credentialsId: 'ansible-ssh-key'      // ID of the SSH key credential in Jenkins
-                    // Add other parameters as needed, e.g., extraVars, limit, etc. [citation:2]
+                    playbook: './setup-server.yml',
+                    inventory: './inventory',  // This should be a separate inventory file, NOT the playbook
+                    credentialsId: 'ansible-ssh-key',
+                    // Optional parameters:
+                    // extraVars: [
+                    //     key: 'value',
+                    //     another_key: 'another_value'
+                    // ],
+                    // limit: 'localhost',
+                    // tags: 'deploy'
                 )
             }
         }
     }
 
-    // --- New: Post-build Actions for Notifications ---
     post {
-        // Define a reusable function for cleaner code [citation:7][citation:11]
         always {
             script {
-                // Call the function defined below
                 slackNotification(currentBuild.result)
             }
         }
@@ -65,10 +71,8 @@ def slackNotification(String buildStatus = 'STARTED') {
     def color = buildStatus == 'SUCCESS'  ? '#47ec05' :
                 buildStatus == 'UNSTABLE' ? '#d5ee0d' :
                                             '#ec2805'
-
-    // Construct a detailed message
+    
     def msg = "${buildStatus}: Job '${env.JOB_NAME}' #${env.BUILD_NUMBER}\n${env.BUILD_URL}"
-
-    // Send the notification via the Slack plugin [citation:3][citation:11]
+    
     slackSend(color: color, message: msg)
 }
