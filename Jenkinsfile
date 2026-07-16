@@ -6,7 +6,7 @@ pipeline {
     tools {
         // Reference the Ansible tool configured in Global Tool Configuration
         // Make sure you've added "Ansible" as a tool with "Install automatically" checked
-        ansible 'Ansible'
+        ansible 'ansible'
     }
 
     stages {
