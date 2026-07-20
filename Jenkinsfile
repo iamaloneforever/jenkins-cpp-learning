@@ -36,7 +36,7 @@ pipeline {
                 ansiblePlaybook(
                     playbook: './setup-server.yml',
                     inventory: './inventory',
-                    credentialsId: 'ansible-ssh-key',
+                    credentialsId: 'ansible-server',
                     colorized: true,
                     extras: '-v'
                 )
