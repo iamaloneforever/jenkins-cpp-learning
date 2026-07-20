@@ -33,14 +33,13 @@ pipeline {
                 unstash 'built-app'
                 
                 // استفاده از پلاگین Ansible
-                ansiblePlaybook(
-                    playbook: './setup-server.yml',
-                    inventory: './inventory',
-                    credentialsId: 'ansible-server',
-                    colorized: true,
-                    extras: '-v'
-                )
-            }
+              ansiblePlaybook(
+    playbook: './setup-server.yml',
+    inventory: './inventory',
+    credentialsId: 'ansible-server',
+    colorized: true,
+    extras: "-v --ssh-extra-args='-o StrictHostKeyChecking=no'"
+)            }
         }
     }
 }
